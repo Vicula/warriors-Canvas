@@ -50,3 +50,15 @@ function WebGL (CID, FSID, VSID){
         }
     }
 }
+
+function LoadShader(Script){
+    var Code = "";
+    var CurrentChild = Script.firstChild;
+    while(CurrentChild)
+    {
+        if(CurrentChild.nodeType == CurrentChild.TEXT_NODE)
+            Code += CurrentChild.textContent;
+        CurrentChild = CurrentChild.nextSibling;
+    }
+    return Code;
+}
