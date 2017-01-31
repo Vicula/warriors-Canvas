@@ -47,11 +47,55 @@ function WebGL (CID, FSID, VSID){
             //Link Texture Coordinate Attribute from Shader
             this.VertexTexture = this.GL.getAttribLocation(this.ShaderProgram, "TextureCoord");
             this.GL.enableVertexAttribArray(this.VertexTexture);
-        }
-    }
-}
+            var TriangleBuffer = this.GL.createBuffer();
+            this.GL.bindBuffer(this.GL.ELEMENT_ARRAY_BUFFER, TriangleBuffer);
+            //Generate The Perspective Matrix
+            var PerspectiveMatrix = MakePerspective(45, this.AspectRatio, 1, 10000.0);
 
-function LoadShader(Script){
+            var TransformMatrix = MakeTransform(Object);
+
+            //Set slot 0 as the active Texture
+            this.GL.activeTexture(this.GL.TEXTURE0);
+
+            //Load in the Texture To Memory
+            this.GL.bindTexture(this.GL.TEXTURE_2D, Texture);
+
+            //Update The Texture Sampler in the fragment shader to use slot 0
+            this.GL.uniform1i(this.GL.getUniformLocation(this.ShaderProgram, "uSampler"), 0);
+
+            //Set The Perspective and Transformation Matrices
+            var pmatrix = this.GL.getUniformLocation(this.ShaderProgram, "PerspectiveMatrix");
+            this.GL.uniformMatrix4fv(pmatrix, false, new Float32Array(PerspectiveMatrix));
+
+            var tmatrix = this.GL.getUniformLocation(this.ShaderProgram, "TransformationMatrix");
+            this.GL.uniformMatrix4fv(tmatrix, false, new Float32Array(TransformMatrix));
+
+            //Draw The Triangles
+            this.GL.drawElements(this.GL.TRIANGLES, Object.Trinagles.length, this.GL.UNSIGNED_SHORT, 0);
+          };
+        
+    }
+    this.Draw = function(Object, Texture){
+        var VertexBuffer = this.GL.createBuffer(); //Create a New Buffer
+
+        //Bind it as The Current Buffer
+        this.GL.bindBuffer(this.GL.ARRAY_BUFFER, VertexBuffer);
+
+        // Fill it With the Data
+        this.GL.bufferData(this.GL.ARRAY_BUFFER, new Float32Array(Object.Vertices), this.GL.STATIC_DRAW);
+
+        //Connect Buffer To Shader's attribute
+        this.GL.vertexAttribPointer(this.VertexPosition, 3, this.GL.FLOAT, false, 0, 0);
+
+        //Repeat For The next Two
+        var TextureBuffer = this.GL.createBuffer();
+        this.GL.bindBuffer(this.GL.ARRAY_BUFFER, TextureBuffer);
+        this.GL.bufferData(this.GL.ARRAY_BUFFER, new Float32Array(Object.Texture), this.GL.STATIC_DRAW);
+        this.GL.vertexAttribPointer(this.VertexTexture, 2, this.GL.FLOAT, false, 0, 0);
+    }
+  }
+
+function LoadShader (Script) {
     var Code = "";
     var CurrentChild = Script.firstChild;
     while(CurrentChild)
@@ -61,4 +105,133 @@ function LoadShader(Script){
         CurrentChild = CurrentChild.nextSibling;
     }
     return Code;
+}
+
+
+var Cube = {
+    Vertices : [ // X, Y, Z Coordinates
+
+        //Front
+
+         1.0,  1.0,  -1.0,
+         1.0, -1.0,  -1.0,
+        -1.0,  1.0,  -1.0,
+        -1.0, -1.0,  -1.0,
+
+        //Back
+
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        -1.0, -1.0,  1.0,
+
+        //Right
+
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0, -1.0,
+         1.0, -1.0, -1.0,
+
+         //Left
+
+        -1.0,  1.0,  1.0,
+        -1.0, -1.0,  1.0,
+        -1.0,  1.0, -1.0,
+        -1.0, -1.0, -1.0,
+
+        //Top
+
+         1.0,  1.0,  1.0,
+        -1.0, -1.0,  1.0,
+         1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+
+        //Bottom
+
+         1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+         1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0
+
+    ],
+    Triangles : [ // Also in groups of threes to define the three points of each triangle
+        //The numbers here are the index numbers in the vertex array
+
+        //Front
+
+        0, 1, 2,
+        1, 2, 3,
+
+        //Back
+
+        4, 5, 6,
+        5, 6, 7,
+
+        //Right
+
+        8, 9, 10,
+        9, 10, 11,
+
+        //Left
+
+        12, 13, 14,
+        13, 14, 15,
+
+        //Top
+
+        16, 17, 18,
+        17, 18, 19,
+
+        //Bottom
+
+        20, 21, 22,
+        21, 22, 23
+
+    ],
+    Texture : [ //This array is in groups of two, the x and y coordinates (a.k.a U,V) in the texture
+        //The numbers go from 0.0 to 1.0, One pair for each vertex
+
+         //Front
+
+         1.0, 1.0,
+         1.0, 0.0,
+         0.0, 1.0,
+         0.0, 0.0,
+
+
+         //Back
+
+         0.0, 1.0,
+         0.0, 0.0,
+         1.0, 1.0,
+         1.0, 0.0,
+
+         //Right
+
+         1.0, 1.0,
+         1.0, 0.0,
+         0.0, 1.0,
+         0.0, 0.0,
+
+         //Left
+
+         0.0, 1.0,
+         0.0, 0.0,
+         1.0, 1.0,
+         1.0, 0.0,
+
+         //Top
+
+         1.0, 0.0,
+         1.0, 1.0,
+         0.0, 0.0,
+         0.0, 1.0,
+
+         //Bottom
+
+         0.0, 0.0,
+         0.0, 1.0,
+         1.0, 0.0,
+         1.0, 1.0
+    ]
 }
