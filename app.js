@@ -35,10 +35,10 @@ function start (){
 
 
   //clear the color and the depth tester
-  console.log(game.COLOR_BUFFER_BIT)
+  // console.log(game.COLOR_BUFFER_BIT)
   game.clear(game.COLOR_BUFFER_BIT | game.DEPTH_BUFFER_BIT);
 
-
+  drawScene()
 }
 
 
@@ -131,10 +131,9 @@ function initBuffers() {
 }
 
 function drawScene() {
-
   game.clear(game.COLOR_BUFFER_BIT | game.DEPTH_BUFFER_BIT);
 
-  perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
+  perspectiveMatrix = MakePerspective(45, 640.0/480.0, 0.1, 100.0);
 
   loadIdentity();
   mvTranslate([-0.0, 0.0, -6.0]);
@@ -164,6 +163,24 @@ function setMatrixUniforms() {
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
-
-
-drawScene()
+function MakePerspective(FOV, AspectRatio, Closest, Farest){
+    var YLimit = Closest * Math.tan(FOV * Math.PI / 360);
+    var A = -( Farest + Closest ) / ( Farest - Closest );
+    var B = -2 * Farest * Closest / ( Farest - Closest );
+    var C = (2 * Closest) / ( (YLimit * AspectRatio) * 2 );
+    var D = (2 * Closest) / ( YLimit * 2 );
+    return [
+        C, 0, 0, 0,
+        0, D, 0, 0,
+        0, 0, A, -1,
+        0, 0, B, 0
+    ];
+}
+function MakeTransform(Object){
+    return [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, -6, 1
+    ];
+}
