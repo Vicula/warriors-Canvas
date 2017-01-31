@@ -1,4 +1,4 @@
-
+//HUGE THANKS TO THE MDN tut https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
 var game;
 
 function start (){
@@ -75,4 +75,41 @@ function initShaders(){
    vertexPositionAttribute = game.getAttribLocation(shaderProgram, 'aVertexPosition');
    game.enableVertexAttribArray(vertexPositionAttribute);
 
+}
+
+function getShader(game, id, type) {
+  var shaderScript, theSource, currentChild, shader;
+
+  shaderScript = document.getElementById(id);
+
+  if (!shaderScript) {
+   return null;
+  }
+
+  theSource = shaderScript.text;
+
+  if (!type) {
+    if (shaderScript.type == 'x-shader/x-fragment') {
+      type = game.FRAGMENT_SHADER;
+    } else if (shaderScript.type == 'x-shader/x-vertex') {
+      type = game.VERTEX_SHADER;
+    } else {
+      // Unknown shader type
+      return null;
+    }
+  }
+  shader = game.createShader(type);
+  game.shaderSource(shader, theSource);
+
+  // Compile the shader program
+  game.compileShader(shader);
+
+  // See if it compiled successfully
+  if (!game.getShaderParameter(shader, game.COMPILE_STATUS)) {
+      console.log('An error occurred compiling the shaders: ' + game.getShaderInfoLog(shader));
+      game.deleteShader(shader);
+      return null;
+  }
+
+  return shader;
 }
