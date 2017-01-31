@@ -73,7 +73,7 @@ function WebGL (CID, FSID, VSID){
             //Draw The Triangles
             this.GL.drawElements(this.GL.TRIANGLES, Object.Trinagles.length, this.GL.UNSIGNED_SHORT, 0);
           };
-        
+
     }
     this.Draw = function(Object, Texture){
         var VertexBuffer = this.GL.createBuffer(); //Create a New Buffer
@@ -234,4 +234,26 @@ var Cube = {
          1.0, 0.0,
          1.0, 1.0
     ]
+}
+
+function MakePerspective(FOV, AspectRatio, Closest, Farest){
+    var YLimit = Closest * Math.tan(FOV * Math.PI / 360);
+    var A = -( Farest + Closest ) / ( Farest - Closest );
+    var B = -2 * Farest * Closest / ( Farest - Closest );
+    var C = (2 * Closest) / ( (YLimit * AspectRatio) * 2 );
+    var D = (2 * Closest) / ( YLimit * 2 );
+    return [
+        C, 0, 0, 0,
+        0, D, 0, 0,
+        0, 0, A, -1,
+        0, 0, B, 0
+    ];
+}
+function MakeTransform(Object){
+    return [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, -6, 1
+    ];
 }
