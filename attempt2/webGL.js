@@ -93,6 +93,26 @@ function WebGL (CID, FSID, VSID){
         this.GL.bufferData(this.GL.ARRAY_BUFFER, new Float32Array(Object.Texture), this.GL.STATIC_DRAW);
         this.GL.vertexAttribPointer(this.VertexTexture, 2, this.GL.FLOAT, false, 0, 0);
     }
+    this.LoadTexture = function(Img){
+        //Create a new Texture and Assign it as the active one
+        var TempTex = this.GL.createTexture();
+        this.GL.bindTexture(this.GL.TEXTURE_2D, TempTex);
+
+        //Flip Positive Y (Optional)
+        this.GL.pixelStorei(this.GL.UNPACK_FLIP_Y_WEBGL, true);
+
+        //Load in The Image
+        this.GL.texImage2D(this.GL.TEXTURE_2D, 0, this.GL.RGBA, this.GL.RGBA, this.GL.UNSIGNED_BYTE, Img);
+
+        //Setup Scaling properties
+        this.GL.texParameteri(this.GL.TEXTURE_2D, this.GL.TEXTURE_MAG_FILTER, this.GL.LINEAR);
+        this.GL.texParameteri(this.GL.TEXTURE_2D, this.GL.TEXTURE_MIN_FILTER, this.GL.LINEAR_MIPMAP_NEAREST);
+        this.GL.generateMipmap(this.GL.TEXTURE_2D);
+
+        //Unbind the texture and return it.
+        this.GL.bindTexture(this.GL.TEXTURE_2D, null);
+        return TempTex;
+    };
   }
 
 function LoadShader (Script) {
