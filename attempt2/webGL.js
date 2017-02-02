@@ -23,7 +23,8 @@ function WebGL (CID, FSID, VSID){
         {
             //Load and Compile Fragment Shader
             var Code = LoadShader(FShader);
-            FShader = this.GL.createShader(this.GL.FRAGMENT_SHADER);
+
+
             this.GL.shaderSource(FShader, Code);
             this.GL.compileShader(FShader);
 
